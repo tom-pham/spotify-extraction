@@ -31,3 +31,21 @@ class MusicDatabase:
             self.cursor.close()
             self.conn.close()
 
+    def create_tables(self):
+        # Create necessary tables in the database if they don't exist
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS tracks (
+                artist_name TEXT,
+                artist_id TEXT,
+                track_name TEXT,
+                track_id TEXT
+            )
+        """)
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS searched_and_not_found (
+                artist_name TEXT,
+                track_name TEXT
+            )
+        """)
+        self.conn.commit()
+
