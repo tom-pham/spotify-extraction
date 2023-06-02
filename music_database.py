@@ -49,3 +49,10 @@ class MusicDatabase:
         """)
         self.conn.commit()
 
+    def artist_and_track_in_db(self, data):
+        # Return if an artist name and track name exist in the database
+        query = "SELECT * FROM tracks WHERE artist_name = ? AND track_name = ?"
+        self.cursor.execute(query, data)
+        result = self.cursor.fetchone()
+        return result is not None
+
