@@ -69,3 +69,9 @@ class MusicDatabase:
         self.cursor.executemany(query, rows)
         self.conn.commit()
 
+    def insert_data_to_searched_db(self, rows):
+        # Insert data into the searched_and_not_found table
+        query = "INSERT INTO searched_and_not_found VALUES (?, ?)"
+        self.cursor.executemany(query, rows)
+        self.conn.commit()
+
