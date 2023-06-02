@@ -63,3 +63,9 @@ class MusicDatabase:
         result = self.cursor.fetchone()
         return result[0] if result else None
 
+    def insert_data_to_db(self, rows):
+        # Insert data into the tracks table
+        query = "INSERT INTO tracks VALUES (?, ?, ?, ?)"
+        self.cursor.executemany(query, rows)
+        self.conn.commit()
+
