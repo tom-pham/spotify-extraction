@@ -26,3 +26,8 @@ class MusicDatabase:
         except sqlite3.Error as e:
             print(f"Error connecting to database: {e}")
 
+    def disconnect_from_database(self):
+        if self.cursor and self.conn:
+            self.cursor.close()
+            self.conn.close()
+
