@@ -75,3 +75,13 @@ class MusicDatabase:
         self.cursor.executemany(query, rows)
         self.conn.commit()
 
+    def artist_and_track_in_skip_db(self, rows):
+        # Check if an artist name and track name exist in the searched_and_not_found table
+        query = "SELECT 1 FROM searched_and_not_found WHERE artist_name = ? AND track_name = ?"
+        for row in rows:
+            self.cursor.execute(query, row)
+            result = self.cursor.fetchone()
+            if result:
+                return True
+        return False
+
