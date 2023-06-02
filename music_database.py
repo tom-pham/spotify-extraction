@@ -16,6 +16,13 @@ class MusicDatabase:
         self.SPOTIPY_REDIRECT_URI = os.getenv('SPOTIPY_REDIRECT_URI')
         self.auth_manager = SpotifyClientCredentials()
         self.sp = spotipy.Spotify(auth_manager=self.auth_manager)
-        self.conn = sqlite3.connect('music.db')
-        self.cursor = self.conn.cursor()
+        self.conn = None
+        self.cursor = None
+
+    def connect_to_database(self):
+        try:
+            self.conn = sqlite3.connect('music.db')
+            self.cursor = self.conn.cursor()
+        except sqlite3.Error as e:
+            print(f"Error connecting to database: {e}")
 
