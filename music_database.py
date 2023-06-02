@@ -56,3 +56,10 @@ class MusicDatabase:
         result = self.cursor.fetchone()
         return result is not None
 
+    def get_artist_id_from_db(self, artist_name, track_name):
+        # Retrieve the artist ID from the database
+        query = "SELECT artist_id FROM tracks WHERE artist_name = ? AND track_name = ?"
+        self.cursor.execute(query, (artist_name, track_name))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+
