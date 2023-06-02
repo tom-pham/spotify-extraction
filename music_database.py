@@ -85,3 +85,51 @@ class MusicDatabase:
                 return True
         return False
 
+    def get_track_ids(self, artist_name, track_name):
+        if self.artist_and_track_in_skip_db((artist_name, track_name)):
+            return
+
+        if self.artist_and_track_in_db((artist_name, track_name)):
+            return
+
+        search_results = self.sp.search(q=artist_name, limit=50, offset=0, type='artist', market=None)
+        artist_meta = search_results['artists']['items']
+        artist_uris = [x['uri'] for x in artist_meta if x['name'] == artist_name]
+
+        for artist_uri in artist_uris:
+            all_albums = self.get_all_albums(artist_uri)
+            if all_albums is None:
+                continue
+
+            all_album_tracks = []
+            for x in range(0, len(all_albums), 20):
+                album_meta = self.sp.albums(all_albums[x:x + 20])
+                albums = [album['tracks']['items'] for album in album_meta['albums']]
+                album_tracks = [song for album in albums for song in album]
+                all_album_tracks.extend([album_track['uri'] for album_track in album_tracks])
+                insert_data = [(artist_name, artist_uri, track['name'], track['uri']) for track in album_tracks]
+                self.insert_data_to_db(insert_data)
+
+                if track_name in [album_track['name'] for album_track in album_tracks]:
+                    return
+
+        insert_data = [(artist_name, track_name)]
+        self.insert_data_to_searched_db(insert_data)
+
+    def get_all_albums(self, artist_uri):
+        try:
+            all_albums = []
+            offset = 0
+            while True:
+                current_results = self.sp.artist_albums(artist_id=artist_uri, limit=50, offset=offset)
+                current_albums = current_results.get('items', [])
+                all_albums.extend([album['uri'] for album in current_albums])
+                offset += len(current_albums)
+                if len(current_albums) < 50:
+                    break
+            time.sleep(2)
+            return all_albums
+        except spotipy.SpotifyException as e:
+            print(f"Spotify API error: {e}")
+            return None
+
